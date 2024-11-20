@@ -1,3 +1,4 @@
+using HotelBooking.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelBooking.Controllers;
@@ -6,21 +7,21 @@ namespace HotelBooking.Controllers;
 [Route("[controller]")]
 public class BookingController : ControllerBase
 {
-    public BookingController()
-    {
-    }
+    private IBookingDateRangeService _dateRangeService;
     
+    public BookingController(IBookingDateRangeService dateRangeService)
+    {
+        _dateRangeService = dateRangeService;
+    }
+
     [HttpGet("available-dates")]
     public IActionResult GetAvailableDates()
     {
-        DateTime minDate = DateTime.UtcNow.Date;
-        DateTime maxDate = minDate.AddDays(330);
-
+        var (minDate, maxDate) = _dateRangeService.GetAvailableDateRange();
         return Ok(new
         {
-            MinDate = minDate.ToString("yyyy-MM-dd"),
-            MaxDate = maxDate.ToString("yyyy-MM-dd")
+            MinDate = minDate,
+            MaxDate = maxDate
         });
     }
-
 }
